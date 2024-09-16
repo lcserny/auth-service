@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { UserPerm, UserRole, UserStatus } from './src/users/user.entity';
 
 async function run() {
-    const config = yaml.load(readFileSync(join(__dirname, "config/config.yaml"), 'utf8')) as Record<string, any>;
+    const config = yaml.load(readFileSync(join(__dirname, "src/config/config.yaml"), 'utf8')) as Record<string, any>;
     const client = new MongoClient(config.database.url, { authSource: "admin" });
     await client.connect();
 
