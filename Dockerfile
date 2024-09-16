@@ -1,6 +1,5 @@
 FROM node:20-bookworm
 WORKDIR /app
-COPY dist/* /app
+COPY . /app
 EXPOSE 8091
-#ENTRYPOINT ["bash", "-c", "node /app/main"]
-ENTRYPOINT ["bash", "-c", "while true; do curl -s http://example.com && sleep 60; done"]
+ENTRYPOINT ["sh", "-c", "node /app/dist/main"]
