@@ -11,14 +11,13 @@ export class AppLogger implements LoggerService {
 
     private readonly logger: winston.Logger;
 
-    // use app name in log pattern?
     constructor(private config: CurrentConfig) {
         this.logger = winston.createLogger();
         this.logger.level = this.config.application.log.level;
         this.logger.format = combine(errors({stack: true}), timestamp(), this.config.application.log.json
                 ? prettyPrint()
                 : printf(({timestamp, level, message, stack}) => {
-                    const text = `${timestamp} ${level.toUpperCase()} ${message}`;
+                    const text = `${timestamp} ${this.config.application.name} ${level.toUpperCase()} ${message}`;
                     return stack ? text + '\n' + stack : text;
                 }));
         this.logger.add(new winston.transports.Console());
