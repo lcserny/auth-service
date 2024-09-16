@@ -1,0 +1,22 @@
+application:
+    name: auth-service
+    port: 8081
+    path: "/security"
+    log:
+        file: "auth-service.log"
+        level: info
+        json: false
+
+database:
+    url: "mongodb://root:rootpassword@localhost:27017/videosmover_dev?retryWrites=true&w=majority"
+    sync: true
+
+authentication:
+    algorithm: "RS256"
+    privateKey: "/home/leonardo/keys/rsa.key"
+    publicKey: "/home/leonardo/keys/rsa.key.pub"
+    accessExpirationMinutes: 15
+    refreshExpirationDays: 7
+    issuer: "auth-service"
+    audience: "vm-services"
+    salt: 10

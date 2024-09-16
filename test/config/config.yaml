@@ -1,0 +1,21 @@
+application:
+    name: auth-service-test
+    port: 9999
+    path: "/security"
+    log:
+        file: "auth-service-test.log"
+        level: info
+        json: false
+
+database:
+    url: "mongodb://takenFromTestcontainers"
+    sync: true
+
+authentication:
+    algorithm: "HS512"
+    secret: "testSecret"
+    accessExpirationMinutes: 15
+    refreshExpirationDays: 7
+    issuer: "test-service"
+    audience: "test-services"
+    salt: 10

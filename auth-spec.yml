@@ -1,0 +1,166 @@
+---
+openapi: 3.0.3
+info:
+    title: auth-service API
+    version: 1.0.0
+paths:
+    /security/users:
+        post:
+            tags:
+                - Create User Resource
+            operationId: register
+            requestBody:
+                content:
+                    application/x-www-form-urlencoded:
+                        schema:
+                            $ref: '#/components/schemas/UserRegistration'
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserResponse'
+        get:
+            tags:
+                - Get Users Resource
+            operationId: getUsers
+            parameters:
+                - name: page
+                  in: query
+                  description: The page number to retrieve
+                  required: false
+                  schema:
+                      type: integer
+                      format: int64
+                - name: limit
+                  in: query
+                  description: The number of items per page
+                  required: false
+                  schema:
+                      type: integer
+                      format: int64
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PaginatedUsers'
+
+    /security/authenticate:
+        post:
+            tags:
+                - Login
+            operationId: signIn
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserRegistration'
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserAccess'
+    /security/authenticate/logout:
+        post:
+            tags:
+                - Logout
+            operationId: signOut
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserResponse'
+    /security/authenticate/refresh:
+        post:
+            tags:
+                - Refresh token
+            operationId: refresh
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserAccess'
+
+components:
+    schemas:
+        UserRegistration:
+            type: object
+            properties:
+                username:
+                    type: string
+                    minLength: 1
+                password:
+                    type: string
+                    minLength: 1
+                firstName:
+                    type: string
+                lastName:
+                    type: string
+            required:
+                - username
+                - password
+        UserAccess:
+            type: object
+            properties:
+                accessToken:
+                    type: string
+                    minLength: 1
+            required:
+                - accessToken
+        UserResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                error:
+                    type: string
+                statusCode:
+                    type: integer
+            required:
+                - message
+                - statusCode
+        UserData:
+            type: object
+            properties:
+                id:
+                    type: string
+                username:
+                    type: string
+                firstName:
+                    type: string
+                lastName:
+                    type: string
+                roles:
+                    type: array
+                    items:
+                        type: string
+                perms:
+                    type: array
+                    items:
+                        type: string
+                status:
+                    type: string
+                created:
+                    type: string
+                    format: date-time
+        PaginatedUsers:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserData'
+                page:
+                    type: integer
+                    format: int64
+                hasMore:
+                    type: boolean
