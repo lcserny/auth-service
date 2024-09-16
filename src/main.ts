@@ -15,8 +15,11 @@ async function bootstrap() {
 
     app.setGlobalPrefix(config.application.path);
     app.enableCors({
-        origin: true,
-        credentials: true
+        credentials: true,
+        // TODO: get from config
+        origin: "http://localhost:4200",
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowedHeaders: ["Content-Type", "Authorization"]
     });
     app.use(cookieParser());
     app.useLogger(logger);

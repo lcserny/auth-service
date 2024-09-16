@@ -6,6 +6,7 @@ import * as process from 'node:process';
 
 const { combine, timestamp, prettyPrint, printf, errors } = winston.format;
 
+// TODO: doesn't work in Docker container
 @Injectable()
 export class AppLogger implements LoggerService {
 
