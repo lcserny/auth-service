@@ -2,6 +2,7 @@ application:
     name: auth-service-test
     port: 9999
     path: "/security"
+    env: "testing"
     log:
         file: "auth-service-test.log"
         level: info
@@ -12,7 +13,7 @@ database:
     sync: true
 
 authentication:
-    algorithm: "HS512"
+    algorithm: "ES256"
     secret: "testSecret"
     accessExpirationMinutes: 15
     refreshExpirationDays: 7

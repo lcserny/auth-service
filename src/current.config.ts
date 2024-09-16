@@ -15,6 +15,7 @@ export class CurrentConfig {
             name: this.configService.get<string>('application.name')!,
             port: this.configService.get<number>('application.port')!,
             path: this.configService.get<string>('application.path', "/"),
+            env: this.configService.get<string>('application.env', "development"),
             log: {
                 file: this.configService.get<string>('application.log.file', "auth-service-%DATE%.log"),
                 level: this.configService.get<string>('application.log.level', "info"),
@@ -48,6 +49,7 @@ export interface AppConfig {
     name: string;
     port: number;
     path: string;
+    env: string;
     log: LogConfig;
 }
 
