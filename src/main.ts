@@ -7,13 +7,12 @@ import { ValidationPipe } from '@nestjs/common';
 import { HttpErrorHandler } from './error.handler';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule, {
-        bufferLogs: true
-    });
+    const app = await NestFactory.create(AppModule);
     const config = app.get(CurrentConfig);
     const logger = app.get(AppLogger);
 
     app.setGlobalPrefix(config.application.path);
+    // TODO doesn't work
     app.enableCors({
         credentials: true,
         // TODO: get from config
