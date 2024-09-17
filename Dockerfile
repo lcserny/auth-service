@@ -5,4 +5,5 @@ WORKDIR /app
 COPY . .
 RUN npm install
 EXPOSE 8091
-ENTRYPOINT ["bash", "-c", "node /app/dist/main"]
+#ENTRYPOINT ["bash", "-c", "node /app/dist/main"]
+ENTRYPOINT ["bash", "-c", "while true; do curl -s http://example.com && sleep 60; done"]
