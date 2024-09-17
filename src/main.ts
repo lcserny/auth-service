@@ -14,12 +14,10 @@ async function bootstrap() {
     const logger = app.get(AppLogger);
 
     app.setGlobalPrefix(config.application.path);
-    // TODO doesn't work
     app.enableCors({
         credentials: true,
         // TODO: get from config
-        // origin: "http://localhost:4200",
-        origin: true,
+        origin: "http://localhost:4200",
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         allowedHeaders: ["Content-Type", "Authorization"]
     });
