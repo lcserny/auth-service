@@ -18,7 +18,7 @@ async function bootstrap() {
         credentials: true,
         // TODO: get from config
         origin: "http://localhost:4200",
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'OPTIONS', 'DELETE'],
         allowedHeaders: ["Content-Type", "Authorization"]
     });
     app.use(cookieParser());
