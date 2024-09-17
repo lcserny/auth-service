@@ -7,7 +7,9 @@ import { ValidationPipe } from '@nestjs/common';
 import { HttpErrorHandler } from './error.handler';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+        bufferLogs: true
+    });
     const config = app.get(CurrentConfig);
     const logger = app.get(AppLogger);
 
