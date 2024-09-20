@@ -14,7 +14,7 @@ database:
 
 authentication:
     algorithm: "HS256"
-    secret: "dummySecret"
+    secret: "67uzoULtouBbSpwjVvzVQ5D1APKTc3i9"
     accessExpirationMinutes: 15
     refreshExpirationDays: 7
     issuer: "auth-service"
