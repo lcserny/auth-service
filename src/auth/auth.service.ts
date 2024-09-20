@@ -71,7 +71,7 @@ export class AuthService {
             exp: accessExpiration.getTime(),
             iat: accessCreation.getTime(),
             iss: this.issuer,
-            aud: this.audience,
+            aud: [this.audience],
             [ROLES_KEY]: user.roles,
             [PERMS_KEY]: user.permissions,
         };
