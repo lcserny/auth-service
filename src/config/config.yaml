@@ -13,7 +13,7 @@ database:
     sync: true
 
 authentication:
-    algorithm: "ES256"
+    algorithm: "HS256"
     secret: "dummySecret"
     accessExpirationMinutes: 15
     refreshExpirationDays: 7
