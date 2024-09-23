@@ -46,10 +46,10 @@ export class AuthController {
     private sendTokensResponse(tokens: Tokens, response: Response) {
         response.cookie(REFRESH_KEY, tokens.refreshToken, {
             httpOnly: true,
-            // TODO: test this, maybe it will not work
             sameSite: "strict",
             path: this.contextPath,
-            secure: true,
+            // I don't have a valid HTTPS certificate
+            // secure: true,
             maxAge: this.authService.getMaxAgeMillis()
         });
 
