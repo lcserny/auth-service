@@ -68,8 +68,8 @@ export class AuthService {
 
         const accessTokenPayload = {
             sub: user.id.toString(),
-            exp: accessExpiration.getTime(),
-            iat: accessCreation.getTime(),
+            exp: Math.floor(accessExpiration.getTime() / 1000), // seconds
+            iat: Math.floor(accessCreation.getTime() / 1000), // seconds
             iss: this.issuer,
             aud: [this.audience],
             [ROLES_KEY]: user.roles,
@@ -95,8 +95,8 @@ export class AuthService {
 
         const refreshTokenPayload = {
             sub: refreshTokenEntity.userId.toString(),
-            iat: refreshTokenEntity.createdTimestamp.getTime(),
-            exp: refreshTokenEntity.expirationTimestamp.getTime(),
+            iat: Math.floor(refreshTokenEntity.createdTimestamp.getTime() / 1000),
+            exp: Math.floor(refreshTokenEntity.expirationTimestamp.getTime() / 1000),
             jti: refreshTokenEntity.id.toString(),
         };
         return this.jwtService.signAsync(refreshTokenPayload);
