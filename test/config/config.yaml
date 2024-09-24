@@ -17,6 +17,7 @@ authentication:
     secret: "testSecret"
     accessExpirationMinutes: 15
     refreshExpirationDays: 7
-    issuer: "test-service"
-    audience: "test-services"
+    issuer: auth-service-test
+    audience:
+        - auth-service-test
     salt: 10

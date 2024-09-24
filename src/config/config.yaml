@@ -1,10 +1,10 @@
 application:
-    name: auth-service
+    name: auth-service-dev
     port: 8081
     path: "/security"
     env: "development"
     log:
-        file: "auth-service.log"
+        file: "auth-service-dev.log"
         level: info
         json: false
 
@@ -17,6 +17,8 @@ authentication:
     secret: "67uzoULtouBbSpwjVvzVQ5D1APKTc3i9"
     accessExpirationMinutes: 15
     refreshExpirationDays: 7
-    issuer: "auth-service"
-    audience: "vm-services"
+    issuer: auth-service-dev
+    audience:
+        - commander
+        - auth-service-dev
     salt: 10

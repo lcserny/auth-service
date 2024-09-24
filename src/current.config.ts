@@ -40,7 +40,7 @@ export class CurrentConfig {
             accessExpirationMinutes: this.configService.get<number>("authentication.accessExpirationMinutes", 15),
             refreshExpirationDays: this.configService.get<number>("authentication.refreshExpirationDays", 7),
             issuer: this.configService.get("authentication.issuer", "auth-service"),
-            audience: this.configService.get("authentication.audience", "vm-services"),
+            audience: this.configService.get<string[]>("authentication.audience", ["auth-service"]),
             salt: this.configService.get<number | string>("authentication.salt", 10),
         };
     }
@@ -76,6 +76,6 @@ export interface AuthConfig {
     accessExpirationMinutes: number;
     refreshExpirationDays: number;
     issuer: string;
-    audience: string;
+    audience: string[];
     salt: number | string;
 }

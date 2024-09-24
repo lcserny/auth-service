@@ -32,7 +32,7 @@ export class AuthService {
     private readonly accessExpMin: number;
     private readonly refreshExpDays: number;
     private readonly issuer: string;
-    private readonly audience: string;
+    private readonly audience: string[];
 
     constructor(private userRepository: UserRepository,
                 private refreshTokenRepository: RefreshTokenRepository,
@@ -71,7 +71,7 @@ export class AuthService {
             exp: Math.floor(accessExpiration.getTime() / 1000), // seconds
             iat: Math.floor(accessCreation.getTime() / 1000), // seconds
             iss: this.issuer,
-            aud: [this.audience],
+            aud: this.audience,
             [ROLES_KEY]: user.roles,
             [PERMS_KEY]: user.permissions,
         };
