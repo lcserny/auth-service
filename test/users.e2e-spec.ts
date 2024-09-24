@@ -12,6 +12,8 @@ const MAPPED_PORT = 27017;
 const USER = 'root';
 const PASS = 'rootpass';
 
+jest.setTimeout(30000);
+
 // TODO
 describe('UserController (e2e)', () => {
     let app: INestApplication;
