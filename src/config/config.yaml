@@ -9,7 +9,7 @@ application:
         json: false
 
 database:
-    url: "mongodb://root:rootpassword@localhost:27017/videosmover_dev?retryWrites=true&w=majority"
+    url: "mongodb://root:rootpassword@localhost:27019/videosmover_dev?retryWrites=true&w=majority"
     sync: true
 
 authentication:
