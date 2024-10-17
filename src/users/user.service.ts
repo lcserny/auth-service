@@ -24,23 +24,31 @@ export class UserService {
         return this.mapUser(user);
     }
 
-    async updateUser(userId: string, data: UserData): Promise<UserData> {
+    private async updateUserInternal(userId: string, data: UserData,
+                                     updater: (user: User, data: UserData) => Promise<User>): Promise<UserData> {
         let user = await this.userRepository.get(userId);
         if (!user) {
             throw new NotFoundException();
         }
 
-        user = this.updateData(user, data);
+        user = await updater(user, data);
         user = await this.userRepository.save(user);
 
         return this.mapUser(user);
     }
 
-    private updateData(user: User, data: UserData): User {
-        if (data.username) {
-            user.username = data.username;
-        }
+    async updateUser(userId: string, data: UserData): Promise<UserData> {
+        return this.updateUserInternal(userId, data, this.updateData);
+    }
 
+    async updateUserExtra(userId: string, data: UserData): Promise<UserData> {
+        return this.updateUserInternal(userId, data, async (user, data) => {
+            user = await this.updateData(user, data);
+            return this.updateExtraData(user, data);
+        });
+    }
+
+    private async updateData(user: User, data: UserData): Promise<User> {
         if (data.firstName) {
             user.firstName = data.firstName;
         }
@@ -49,6 +57,14 @@ export class UserService {
             user.lastName = data.lastName;
         }
 
+        if (data.password && data.password.length > 0) {
+            user.password = await bcrypt.hash(data.password, this.saltRounds);
+        }
+
+        return user;
+    }
+
+    private async updateExtraData(user: User, data: UserData): Promise<User> {
         if (data.roles) {
             user.roles = data.roles as UserRole[];
         }
@@ -68,6 +84,7 @@ export class UserService {
         return {
             id: user.id.toString(),
             username: user.username,
+            password: "",
             firstName: user.firstName,
             lastName: user.lastName,
             roles: user.roles,
@@ -78,11 +95,11 @@ export class UserService {
     }
 
     async createUser(userReg: UserRegistration): Promise<User> {
-        const hashedPpass = await bcrypt.hash(userReg.password, this.saltRounds);
+        const hashedPass = await bcrypt.hash(userReg.password, this.saltRounds);
 
         const user = new User();
         user.username = userReg.username;
-        user.password = hashedPpass;
+        user.password = hashedPass;
         user.firstName = userReg.firstName;
         user.lastName = userReg.lastName;
         user.status = "active";
@@ -99,6 +116,6 @@ export class UserService {
         const hasMore = (page + 1) < Math.ceil(total / perPage);
         const data = users.map(user => this.mapUser(user));
 
-        return { data, page, hasMore };
+        return { data, hasMore, total };
     }
 }

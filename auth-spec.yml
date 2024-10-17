@@ -47,6 +47,48 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/PaginatedUsers'
+    /security/users/{id}:
+        get:
+            tags:
+                - Get Single User
+            operationId: getUser
+            parameters:
+                - name: id
+                  in: path
+                  description: The user ID
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserData'
+        put:
+            tags:
+                - Update Single User Data
+            operationId: updateUser
+            parameters:
+                - name: id
+                  in: path
+                  description: The user ID
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                  content:
+                      application/json:
+                          schema:
+                              $ref: '#/components/schemas/UserData'
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserData'
 
     /security/authenticate:
         post:
@@ -114,8 +156,21 @@ components:
                 accessToken:
                     type: string
                     minLength: 1
+                userId:
+                    type: string
+                roles:
+                    type: array
+                    items:
+                        type: string
+                perms:
+                    type: array
+                    items:
+                        type: string
             required:
                 - accessToken
+                - userId
+                - roles
+                - perms
         UserResponse:
             type: object
             properties:
@@ -135,6 +190,8 @@ components:
                     type: string
                 username:
                     type: string
+                password:
+                    type: string
                 firstName:
                     type: string
                 lastName:
@@ -152,15 +209,25 @@ components:
                 created:
                     type: string
                     format: date-time
-        PaginatedUsers:
+        PaginatedBase:
             type: object
             properties:
-                data:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/UserData'
-                page:
-                    type: integer
-                    format: int64
                 hasMore:
                     type: boolean
+                total:
+                    type: integer
+                    format: int64
+            required:
+                - hasMore
+                - total
+        PaginatedUsers:
+            type: object
+            allOf:
+                - $ref: '#/components/schemas/PaginatedBase'
+                - properties:
+                    data:
+                        type: array
+                        items:
+                            $ref: '#/components/schemas/UserData'
+                - required:
+                    - data

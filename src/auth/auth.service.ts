@@ -17,6 +17,9 @@ import { CurrentConfig } from '../current.config';
 export interface Tokens {
     accessToken: string,
     refreshToken: string,
+    userId: string,
+    roles: string[],
+    perms: string[],
 }
 
 const MAX_AGE_THRESHOLD = 10000; // 10 seconds
@@ -58,7 +61,7 @@ export class AuthService {
         const accessToken = await this.createAccessToken(user);
         const refreshToken = await this.createRefreshToken(user);
 
-        return { accessToken, refreshToken };
+        return { accessToken, refreshToken, userId: user.id.toString(), roles: user.roles, perms: user.permissions };
     }
 
     private async createAccessToken(user: User): Promise<string> {
@@ -132,7 +135,7 @@ export class AuthService {
         const accessToken = await this.createAccessToken(user);
         const newRefreshToken = await this.createRefreshToken(user, foundToken.expirationTimestamp);
 
-        return { accessToken, refreshToken: newRefreshToken };
+        return { accessToken, refreshToken: newRefreshToken, userId: user.id.toString(), roles: user.roles, perms: user.permissions };
     }
 
     async logout(refreshToken?: string) {

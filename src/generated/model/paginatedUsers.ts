@@ -13,8 +13,8 @@ import { UserData } from './userData';
 
 
 export interface PaginatedUsers { 
-    data?: Array<UserData>;
-    page?: number;
-    hasMore?: boolean;
+    hasMore: boolean;
+    total: number;
+    data: Array<UserData>;
 }
 

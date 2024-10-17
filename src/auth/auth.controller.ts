@@ -55,6 +55,9 @@ export class AuthController {
 
         response.status(HttpStatus.OK).json({
             accessToken: tokens.accessToken,
+            userId: tokens.userId,
+            roles: tokens.roles,
+            perms: tokens.perms
         } as UserAccess);
     }
 

@@ -1,9 +1,11 @@
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { PERMS_KEY, ROLES_KEY } from '../auth/auth.service';
-import { UserPerm, UserRole } from './user.entity';
+import { ROLES_KEY } from '../auth/auth.service';
+import { UserRole } from './user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { CurrentConfig } from '../current.config';
+
+// guards that check roles, not perms, perms are checked by controller based on action
 
 @Injectable()
 export class UserGuard implements CanActivate {
@@ -41,11 +43,10 @@ export class UserGuard implements CanActivate {
             const payload = this.jwtService.verify(token);
             const userId: string = payload.sub;
             const roles: UserRole[] = payload[ROLES_KEY];
-            const perms: UserPerm[] = payload[PERMS_KEY];
             const issuer: string = payload.iss;
             const audience: string[] = payload.aud;
 
-            if (!this.validate(userId, roles, perms, issuer, audience)) {
+            if (!this.validate(userId, roles, issuer, audience)) {
                 this.logger.warn(`User with id '${userId}' tried to ${method} on protected path '${path}'`);
                 return false;
             }
@@ -56,17 +57,13 @@ export class UserGuard implements CanActivate {
         }
     }
 
-    protected validate(userId: string, roles: UserRole[], perms: UserPerm[], issuer: string, audience: string[]): boolean {
-        if (!roles || !perms || perms.length === 0 || roles.length === 0) {
+    protected validate(userId: string, roles: UserRole[], issuer: string, audience: string[]): boolean {
+        if (!roles || roles.length === 0) {
             return false;
         }
 
-        if (roles.includes("ADMIN")) {
-            return true;
-        }
-
-        if (perms.includes("READ")) {
-            return true;
+        if (roles.includes("GUEST")) {
+            return false;
         }
 
         if (this.issuer !== issuer) {
@@ -79,15 +76,15 @@ export class UserGuard implements CanActivate {
             return false;
         }
 
-        return false;
+        return true;
     }
 }
 
 @Injectable()
 export class AdminUserGuard extends UserGuard {
 
-    protected validate(userId: string, roles: UserRole[], perms: UserPerm[], issuer: string, audience: string[]): boolean {
-        if (!roles || !perms || perms.length === 0 || roles.length === 0) {
+    protected validate(userId: string, roles: UserRole[], issuer: string, audience: string[]): boolean {
+        if (!roles || roles.length === 0) {
             return false;
         }
 
