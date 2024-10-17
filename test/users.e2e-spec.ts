@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, Module } from '@nestjs/common';
+import { HttpStatus, INestApplication, Module } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { GenericContainer, StartedTestContainer, Wait } from 'testcontainers';
@@ -7,6 +7,7 @@ import { AdminUserGuard, UserGuard } from '../src/users/user.guard';
 import { CurrentConfig } from '../src/current.config';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../src/configuration';
+import { UserRegistration } from '../src/generated/model/userRegistration';
 
 const MAPPED_PORT = 27017;
 const USER = 'root';
@@ -64,10 +65,14 @@ describe('UserController (e2e)', () => {
         await container.stop();
     });
 
-    it('GET /users', () => {
+    it('POST /users to register new user', () => {
         return request(app.getHttpServer())
-                .get('/users')
-                .expect(200);
+                .post('/users')
+                .send({
+                    username: "some user",
+                    password: "some pass"
+                } as UserRegistration)
+                .expect(HttpStatus.CREATED);
     });
 });
 
