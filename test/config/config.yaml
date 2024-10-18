@@ -17,6 +17,7 @@ authentication:
     secret: "testSecret"
     accessExpirationMinutes: 15
     refreshExpirationDays: 7
+    refreshTokenName: refreshTokenTest
     issuer: auth-service-test
     audience:
         - auth-service-test

@@ -13,8 +13,6 @@ import { UserRegistration } from '../generated/model/userRegistration';
 import { UserAccess } from '../generated/model/userAccess';
 import { UserResponse } from '../generated/model/userResponse';
 
-const REFRESH_KEY = 'refreshToken';
-
 @Controller('authenticate')
 export class AuthController {
 
@@ -36,7 +34,7 @@ export class AuthController {
 
     @Post("/refresh")
     async refresh(@Req() request: Request, @Res() response: Response){
-        const refreshToken = request.cookies[REFRESH_KEY];
+        const refreshToken = request.cookies[this.config.authentication.refreshTokenName];
         this.logger.log(`Refresh request received for token: ${refreshToken}`)
 
         const tokens = await this.authService.validate(refreshToken);
@@ -44,7 +42,7 @@ export class AuthController {
     }
 
     private sendTokensResponse(tokens: Tokens, response: Response) {
-        response.cookie(REFRESH_KEY, tokens.refreshToken, {
+        response.cookie(this.config.authentication.refreshTokenName, tokens.refreshToken, {
             httpOnly: true,
             sameSite: "strict",
             path: this.contextPath,
@@ -63,11 +61,11 @@ export class AuthController {
 
     @Post("/logout")
     async signOut(@Req() request: Request, @Res() response: Response){
-        const refreshToken = request.cookies[REFRESH_KEY];
+        const refreshToken = request.cookies[this.config.authentication.refreshTokenName];
         this.logger.log(`Logout request received for token: ${refreshToken}`)
 
         await this.authService.logout(refreshToken);
-        response.clearCookie(REFRESH_KEY, { path: this.contextPath, });
+        response.clearCookie(this.config.authentication.refreshTokenName, { path: this.contextPath, });
 
         const status = HttpStatus.OK;
         response.status(status).json({

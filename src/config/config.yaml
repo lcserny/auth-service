@@ -17,6 +17,7 @@ authentication:
     secret: "67uzoULtouBbSpwjVvzVQ5D1APKTc3i9"
     accessExpirationMinutes: 15
     refreshExpirationDays: 7
+    refreshTokenName: refreshTokenDev
     issuer: auth-service-dev
     audience:
         - commander
