@@ -6,6 +6,7 @@ import { CurrentConfig } from '../current.config';
 import { UserData } from '../generated/model/userData';
 import { UserRegistration } from '../generated/model/userRegistration';
 import { PaginatedUsers } from '../generated/model/paginatedUsers';
+import { NameValuePair } from '../generated/model/nameValuePair';
 
 @Injectable()
 export class UserService {
@@ -117,5 +118,10 @@ export class UserService {
         const data = users.map(user => this.mapUser(user));
 
         return { data, hasMore, total };
+    }
+
+    async searchUsers(searchUsers: NameValuePair[]): Promise<UserData[]> {
+        const users = await this.userRepository.search(searchUsers);
+        return users.map(user => this.mapUser(user));
     }
 }

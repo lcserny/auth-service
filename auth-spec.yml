@@ -47,6 +47,25 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/PaginatedUsers'
+    /security/users/search:
+        post:
+            tags:
+                - Search Users Resource
+            operationId: search
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UsersSearch'
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/UserData'
     /security/users/{id}:
         get:
             tags:
@@ -231,3 +250,16 @@ components:
                             $ref: '#/components/schemas/UserData'
                 - required:
                     - data
+        NameValuePair:
+            type: object
+            properties:
+                name:
+                    type: string
+                value:
+                    type: string
+            required:
+                - name
+        UsersSearch:
+            type: array
+            items:
+                $ref: '#/components/schemas/NameValuePair'

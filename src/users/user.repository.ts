@@ -3,6 +3,7 @@ import { User } from './user.entity';
 import { Injectable } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { InjectRepository } from '@nestjs/typeorm';
+import { NameValuePair } from '../generated/model/nameValuePair';
 
 @Injectable()
 export class UserRepository {
@@ -23,6 +24,13 @@ export class UserRepository {
                 ["username"]: 'ASC',
             },
         });
+    }
+
+    async search(searchUsers: NameValuePair[]): Promise<User[]> {
+        const whereFilters = searchUsers.filter(pair => pair.value)
+                .map(pair => [pair.name, new RegExp(`.*${pair.value}.*`, "i")]);
+        const whereClause = Object.fromEntries(whereFilters);
+        return this.repo.find(whereClause)
     }
 
     async findOneByUsername(username: string): Promise<User | null> {

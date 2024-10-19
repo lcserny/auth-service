@@ -16,6 +16,7 @@ import { convertToNumber } from '../app.module';
 import { JwtService } from '@nestjs/jwt';
 import { UserPerm, UserRole } from './user.entity';
 import { PERMS_KEY, ROLES_KEY } from '../auth/auth.service';
+import { NameValuePair } from '../generated/model/nameValuePair';
 
 @Controller("/users")
 export class UserController {
@@ -114,5 +115,21 @@ export class UserController {
         }
 
         response.status(HttpStatus.OK).json(updatedUser);
+    }
+
+    @UseGuards(AdminUserGuard)
+    @Post("/search")
+    async searchUsers(@Body() searchUsers: NameValuePair[],
+                      @Req() request: Request,
+                      @Res() response: Response) {
+        this.logger.log(`Search users request received`);
+
+        const userAuth = this.getUserAuth(request);
+        if (!userAuth.perms.includes("READ")) {
+            throw new UnauthorizedException(`User with ID ${userAuth.userId} cannot search users without READ permission`);
+        }
+
+        const users = await this.userService.searchUsers(searchUsers);
+        response.status(HttpStatus.OK).json(users);
     }
 }
