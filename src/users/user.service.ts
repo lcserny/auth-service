@@ -7,6 +7,7 @@ import { UserData } from '../generated/model/userData';
 import { UserRegistration } from '../generated/model/userRegistration';
 import { PaginatedUsers } from '../generated/model/paginatedUsers';
 import { NameValuePair } from '../generated/model/nameValuePair';
+import * as moment from 'moment';
 
 @Injectable()
 export class UserService {
@@ -76,6 +77,10 @@ export class UserService {
 
         if (data.status) {
             user.status = data.status as UserStatus;
+        }
+
+        if (data.created) {
+            user.createdTimestamp = moment(data.created).toDate();
         }
 
         return user;
