@@ -16,21 +16,19 @@ export class UserRepository {
         return this.repo.findOneBy({ _id: objId });
     }
 
-    async getAll(start: number, perPage: number): Promise<[User[], number]> {
+    async getAll(start: number, perPage: number, searchUsers: NameValuePair[]): Promise<[User[], number]> {
+        const whereFilters = searchUsers.filter(pair => pair.value)
+                .map(pair => [pair.name, new RegExp(`.*${pair.value}.*`, "i")]);
+        const whereClause = Object.fromEntries(whereFilters);
+
         return this.repo.findAndCount({
             skip: start,
             take: perPage,
             order: {
                 ["username"]: 'ASC',
             },
+            where: whereClause
         });
-    }
-
-    async search(searchUsers: NameValuePair[]): Promise<User[]> {
-        const whereFilters = searchUsers.filter(pair => pair.value)
-                .map(pair => [pair.name, new RegExp(`.*${pair.value}.*`, "i")]);
-        const whereClause = Object.fromEntries(whereFilters);
-        return this.repo.find(whereClause)
     }
 
     async findOneByUsername(username: string): Promise<User | null> {

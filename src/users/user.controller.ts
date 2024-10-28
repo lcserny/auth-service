@@ -54,6 +54,9 @@ export class UserController {
     @Get()
     async getUsers(@Query('page') page: string = '0',
                    @Query('perPage') perPage: string = '10',
+                   @Query("username") username: string | undefined,
+                   @Query("firstName") firstName: string | undefined,
+                   @Query("lastName") lastName: string | undefined,
                    @Req() request: Request,
                    @Res() response: Response) {
         this.logger.log(`Get all users request received`);
@@ -66,7 +69,13 @@ export class UserController {
         const pageInt = convertToNumber(page);
         const perPageInt = convertToNumber(perPage);
 
-        const usersPage = await this.userService.getPaginatedUsers(pageInt, perPageInt);
+        const searchUsers: NameValuePair[] = [
+            { name: "username", value: username },
+            { name: "firstName", value: firstName },
+            { name: "lastName", value: lastName }
+        ];
+
+        const usersPage = await this.userService.getPaginatedUsers(pageInt, perPageInt, searchUsers);
         response.status(HttpStatus.OK).json(usersPage);
     }
 
@@ -115,21 +124,5 @@ export class UserController {
         }
 
         response.status(HttpStatus.OK).json(updatedUser);
-    }
-
-    @UseGuards(AdminUserGuard)
-    @Post("/search")
-    async searchUsers(@Body() searchUsers: NameValuePair[],
-                      @Req() request: Request,
-                      @Res() response: Response) {
-        this.logger.log(`Search users request received`);
-
-        const userAuth = this.getUserAuth(request);
-        if (!userAuth.perms.includes("READ")) {
-            throw new UnauthorizedException(`User with ID ${userAuth.userId} cannot search users without READ permission`);
-        }
-
-        const users = await this.userService.searchUsers(searchUsers);
-        response.status(HttpStatus.OK).json(users);
     }
 }

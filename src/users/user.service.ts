@@ -115,18 +115,13 @@ export class UserService {
         return this.userRepository.save(user);
     }
 
-    async getPaginatedUsers(page: number, perPage: number): Promise<PaginatedUsers> {
+    async getPaginatedUsers(page: number, perPage: number, searchUsers: NameValuePair[]): Promise<PaginatedUsers> {
         const skip = page * perPage;
-        const [users, total] = await this.userRepository.getAll(skip, perPage);
+        const [users, total] = await this.userRepository.getAll(skip, perPage, searchUsers);
 
         const hasMore = (page + 1) < Math.ceil(total / perPage);
         const data = users.map(user => this.mapUser(user));
 
         return { data, hasMore, total };
-    }
-
-    async searchUsers(searchUsers: NameValuePair[]): Promise<UserData[]> {
-        const users = await this.userRepository.search(searchUsers);
-        return users.map(user => this.mapUser(user));
     }
 }

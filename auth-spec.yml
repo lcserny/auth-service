@@ -40,6 +40,24 @@ paths:
                   schema:
                       type: integer
                       format: int64
+                - name: username
+                  in: query
+                  description: Filter for username
+                  required: false
+                  schema:
+                      type: string
+                - name: firstName
+                  in: query
+                  description: Filter for firstName
+                  required: false
+                  schema:
+                      type: string
+                - name: lastName
+                  in: query
+                  description: Filter for lastName
+                  required: false
+                  schema:
+                      type: string
             responses:
                 "200":
                     description: OK
@@ -47,25 +65,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/PaginatedUsers'
-    /security/users/search:
-        post:
-            tags:
-                - Search Users Resource
-            operationId: search
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UsersSearch'
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    $ref: '#/components/schemas/UserData'
     /security/users/{id}:
         get:
             tags:
@@ -259,7 +258,3 @@ components:
                     type: string
             required:
                 - name
-        UsersSearch:
-            type: array
-            items:
-                $ref: '#/components/schemas/NameValuePair'
