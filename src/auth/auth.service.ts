@@ -22,8 +22,6 @@ export interface Tokens {
     perms: string[],
 }
 
-const MAX_AGE_THRESHOLD = 10000; // 10 seconds
-
 export const ROLES_KEY = "roles";
 export const PERMS_KEY = "perms";
 
@@ -65,14 +63,10 @@ export class AuthService {
     }
 
     private async createAccessToken(user: User): Promise<string> {
-        const accessCreation = new Date();
-        const accessExpiration = new Date();
-        accessExpiration.setUTCMinutes(accessExpiration.getUTCMinutes() + this.accessExpMin);
-
         const accessTokenPayload = {
             sub: user.id.toString(),
-            exp: Math.floor(accessExpiration.getTime() / 1000), // seconds
-            iat: Math.floor(accessCreation.getTime() / 1000), // seconds
+            exp: Math.floor(Date.now() / 1000) + (60 * this.accessExpMin),
+            iat: Math.floor(Date.now() / 1000),
             iss: this.issuer,
             aud: this.audience,
             [ROLES_KEY]: user.roles,
@@ -91,7 +85,7 @@ export class AuthService {
             refreshTokenEntity.expirationTimestamp = exp;
         } else {
             refreshTokenEntity.expirationTimestamp = new Date();
-            refreshTokenEntity.expirationTimestamp.setUTCDate(refreshTokenEntity.expirationTimestamp.getUTCDate() + this.refreshExpDays);
+            refreshTokenEntity.expirationTimestamp.setDate(refreshTokenEntity.expirationTimestamp.getDate() + this.refreshExpDays);
         }
 
         refreshTokenEntity = await this.refreshTokenRepository.save(refreshTokenEntity);
@@ -153,7 +147,7 @@ export class AuthService {
         await this.refreshTokenRepository.revokeToken(tokenId);
     }
 
-    public getMaxAgeMillis() {
-        return this.refreshExpDays * 24 * 60 * 60 * 1000 + MAX_AGE_THRESHOLD;
+    public getMaxAgeSeconds() {
+        return this.refreshExpDays * 24 * 60 * 60;
     }
 }
