@@ -48,7 +48,7 @@ export class AuthController {
             path: this.contextPath,
             // I don't have a valid HTTPS certificate
             // secure: true,
-            maxAge: this.authService.getMaxAgeSeconds()
+            // maxAge: this.authService.getMaxAgeSeconds()
         });
 
         response.status(HttpStatus.OK).json({
