@@ -1,25 +1,42 @@
 import {
     Body,
-    Controller, Get,
+    Controller, Get, HttpCode,
     HttpStatus,
     Logger, Param,
     Post, Put, Query, Req,
-    Res, UnauthorizedException, UseGuards,
+    UnauthorizedException, UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { Response, Request } from 'express';
+import { Request } from 'express';
 import { AdminUserGuard, UserGuard } from './user.guard';
-import { UserResponse } from '../generated/model/userResponse';
-import { UserRegistration } from '../generated/model/userRegistration';
-import { UserData } from '../generated/model/userData';
 import { convertToNumber } from '../app.module';
 import { JwtService } from '@nestjs/jwt';
-import { UserPerm, UserRole } from './user.entity';
 import { PERMS_KEY, ROLES_KEY } from '../auth/auth.service';
-import { NameValuePair } from '../generated/model/nameValuePair';
+import {
+    ApiResponse,
+    CreateUserResourceApiInterface,
+    GetSingleUserApiInterface,
+    GetUserRequest,
+    GetUsersRequest,
+    GetUsersResourceApiInterface,
+    NameValuePair,
+    PaginatedUsers,
+    RegisterRequest,
+    UpdateSingleUserDataApiInterface,
+    UpdateUserRequest,
+    UserData,
+    UserPerm,
+    UserRegistration,
+    UserResponse, UserRole,
+} from '../generated';
 
 @Controller("/users")
-export class UserController {
+export class UserController implements
+        CreateUserResourceApiInterface,
+        GetSingleUserApiInterface,
+        GetUsersResourceApiInterface,
+        UpdateSingleUserDataApiInterface
+{
     
     protected readonly logger = new Logger(UserController.name);
 
@@ -38,27 +55,35 @@ export class UserController {
     }
 
     @Post()
-    async register(@Body() userReg: UserRegistration, @Res() response: Response){
+    @HttpCode(HttpStatus.CREATED)
+    async registerReal(@Body() userReg: UserRegistration): Promise<UserResponse> {
         this.logger.log(`Register request received for username: ${userReg.username}`)
-
         const user = await this.userService.createUser(userReg);
-
-        const status = HttpStatus.CREATED;
-        response.status(status).json({
+        return {
             message: `User created with name: ${user.username}`,
-            statusCode: status,
-        } as UserResponse);
+            statusCode: HttpStatus.CREATED,
+        };
+    }
+
+    // spec binding method
+    async register(req: RegisterRequest): Promise<UserResponse> {
+        return this.registerReal(req as UserRegistration);
+    }
+
+    // spec binding method
+    async registerRaw(req: RegisterRequest): Promise<ApiResponse<UserResponse>> {
+        throw new Error(`Stub method, no usage allowed ${req}`);
     }
 
     @UseGuards(AdminUserGuard)
     @Get()
-    async getUsers(@Query('page') page: string = '0',
+    @HttpCode(HttpStatus.OK)
+    async getUsersReal(@Query('page') page: string = '0',
                    @Query('perPage') perPage: string = '10',
                    @Query("username") username: string | undefined,
                    @Query("firstName") firstName: string | undefined,
                    @Query("lastName") lastName: string | undefined,
-                   @Req() request: Request,
-                   @Res() response: Response) {
+                   @Req() request: Request): Promise<PaginatedUsers> {
         this.logger.log(`Get all users request received`);
 
         const userAuth = this.getUserAuth(request);
@@ -75,13 +100,24 @@ export class UserController {
             { name: "lastName", value: lastName }
         ];
 
-        const usersPage = await this.userService.getPaginatedUsers(pageInt, perPageInt, searchUsers);
-        response.status(HttpStatus.OK).json(usersPage);
+        return this.userService.getPaginatedUsers(pageInt, perPageInt, searchUsers);
+    }
+
+    // spec binding method
+    async getUsers(req: GetUsersRequest): Promise<PaginatedUsers> {
+        const {page, limit, username, firstName, lastName} = req;
+        return this.getUsersReal(page?.toString(), limit?.toString(), username, firstName, lastName, {} as Request);
+    }
+
+    // spec binding method
+    async getUsersRaw(req: GetUsersRequest): Promise<ApiResponse<PaginatedUsers>> {
+        throw new Error(`Stub method, no usage allowed ${req}`);
     }
 
     @UseGuards(UserGuard)
     @Get(":id")
-    async getUser(@Param('id') id: string, @Res() response: Response, @Req() request: Request) {
+    @HttpCode(HttpStatus.OK)
+    async getUserReal(@Param('id') id: string, @Req() request: Request): Promise<UserData> {
         this.logger.log(`Get user with id ${id} request received`);
 
         const userAuth = this.getUserAuth(request);
@@ -93,14 +129,23 @@ export class UserController {
             throw new UnauthorizedException(`User with ID ${userAuth.userId} cannot get user data without READ permission`);
         }
 
-        const user = await this.userService.getUser(id);
-        response.status(HttpStatus.OK).json(user);
+        return this.userService.getUser(id as string);
+    }
+
+    // spec binding method
+    async getUser(req: GetUserRequest): Promise<UserData> {
+        return this.getUserReal(req.id, {} as Request);
+    }
+
+    // spec binding method
+    async getUserRaw(req: GetUserRequest): Promise<ApiResponse<UserData>> {
+        throw new Error(`Stub method, no usage allowed ${req}`);
     }
 
     @UseGuards(UserGuard)
     @Put(":id")
-    async updateUser(@Param('id') id: string, @Body() userData: UserData,
-                     @Res() response: Response, @Req() request: Request) {
+    @HttpCode(HttpStatus.OK)
+    async updateUserReal(@Param('id') id: string, @Body() userData: UserData, @Req() request: Request): Promise<UserData> {
         this.logger.log(`Update user with id ${id} request received`);
 
         const userAuth = this.getUserAuth(request);
@@ -116,13 +161,19 @@ export class UserController {
             throw new UnauthorizedException(`Guest user with ID ${userAuth.userId} cannot update user data`);
         }
 
-        let updatedUser: UserData;
         if (userAuth.roles.includes("ADMIN")) {
-            updatedUser = await this.userService.updateUserExtra(id, userData);
-        } else {
-            updatedUser = await this.userService.updateUser(id, userData);
+            return this.userService.updateUserExtra(id, userData);
         }
+        return this.userService.updateUser(id, userData);
+    }
 
-        response.status(HttpStatus.OK).json(updatedUser);
+    // spec binding method
+    async updateUser(req: UpdateUserRequest): Promise<UserData> {
+        return this.updateUserReal(req.id, req.userData!, {} as Request);
+    }
+
+    // spec binding method
+    async updateUserRaw(req: UpdateUserRequest): Promise<ApiResponse<UserData>> {
+        throw new Error(`Stub method, no usage allowed ${req}`);
     }
 }

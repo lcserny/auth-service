@@ -1,8 +1,5 @@
 import { Column, Entity, Index, ObjectId, ObjectIdColumn } from 'typeorm';
-
-export type UserStatus = "active" | "inactive";
-export type UserRole = "ADMIN" | "STANDARD" | "GUEST";
-export type UserPerm = "READ" | "WRITE";
+import { UserPerm, UserRole, UserStatus } from '../generated';
 
 @Entity()
 export class User {

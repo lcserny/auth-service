@@ -32,14 +32,14 @@ paths:
                   required: false
                   schema:
                       type: integer
-                      format: int64
+                      format: int32
                 - name: limit
                   in: query
                   description: The number of items per page
                   required: false
                   schema:
                       type: integer
-                      format: int64
+                      format: int32
                 - name: username
                   in: query
                   description: Filter for username
@@ -179,11 +179,11 @@ components:
                 roles:
                     type: array
                     items:
-                        type: string
+                        $ref: "#/components/schemas/UserRole"
                 perms:
                     type: array
                     items:
-                        type: string
+                        $ref: "#/components/schemas/UserPerm"
             required:
                 - accessToken
                 - userId
@@ -217,13 +217,13 @@ components:
                 roles:
                     type: array
                     items:
-                        type: string
+                        $ref: "#/components/schemas/UserRole"
                 perms:
                     type: array
                     items:
-                        type: string
+                        $ref: "#/components/schemas/UserPerm"
                 status:
-                    type: string
+                    $ref: "#/components/schemas/UserStatus"
                 created:
                     type: string
                     format: date-time
@@ -258,3 +258,19 @@ components:
                     type: string
             required:
                 - name
+        UserRole:
+            enum:
+                - ADMIN
+                - STANDARD
+                - GUEST
+            type: string
+        UserStatus:
+            enum:
+                - active
+                - inactive
+            type: string
+        UserPerm:
+            enum:
+                - READ
+                - WRITE
+            type: string

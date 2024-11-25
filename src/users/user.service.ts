@@ -1,13 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User, UserPerm, UserRole, UserStatus } from './user.entity';
+import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
 import { CurrentConfig } from '../current.config';
-import { UserData } from '../generated/model/userData';
-import { UserRegistration } from '../generated/model/userRegistration';
-import { PaginatedUsers } from '../generated/model/paginatedUsers';
-import { NameValuePair } from '../generated/model/nameValuePair';
 import * as moment from 'moment';
+import {
+    NameValuePair,
+    PaginatedUsers,
+    UserData,
+    UserPerm,
+    UserRegistration,
+    UserRole,
+    UserStatus,
+} from '../generated';
 
 @Injectable()
 export class UserService {
@@ -96,7 +101,7 @@ export class UserService {
             roles: user.roles,
             perms: user.permissions,
             status: user.status,
-            created: user.createdTimestamp.toISOString()
+            created: user.createdTimestamp
         };
     }
 

@@ -13,13 +13,14 @@ import { RefreshTokenRepository } from './refreshtoken.repository';
 import { User } from '../users/user.entity';
 import { ObjectId } from 'mongodb';
 import { CurrentConfig } from '../current.config';
+import { UserPerm, UserRole } from '../generated';
 
 export interface Tokens {
     accessToken: string,
     refreshToken: string,
     userId: string,
-    roles: string[],
-    perms: string[],
+    roles: UserRole[],
+    perms: UserPerm[],
 }
 
 export const ROLES_KEY = "roles";

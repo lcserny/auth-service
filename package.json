@@ -19,7 +19,7 @@
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "jest --config ./test/jest-e2e.json",
-        "specgen": "openapi-generator-cli generate -i auth-spec.yml -g typescript-nestjs -o src/generated --global-property models"
+        "specgen": "openapi-generator-cli generate -i auth-spec.yml -g typescript-fetch -o src/generated --additional-properties=withInterfaces=true"
     },
     "dependencies": {
         "@nestjs/common": "^10.0.0",

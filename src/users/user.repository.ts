@@ -3,7 +3,7 @@ import { User } from './user.entity';
 import { Injectable } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NameValuePair } from '../generated/model/nameValuePair';
+import { NameValuePair } from '../generated';
 
 @Injectable()
 export class UserRepository {

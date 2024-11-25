@@ -1,9 +1,9 @@
 import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ROLES_KEY } from '../auth/auth.service';
-import { UserRole } from './user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { CurrentConfig } from '../current.config';
+import { UserRole } from '../generated';
 
 // guards that check roles, not perms, perms are checked by controller based on action
 

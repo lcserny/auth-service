@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Response } from 'express';
-import { UserResponse } from './generated/model/userResponse';
+import { UserResponse } from './generated';
 
 @Catch(Error)
 export class HttpErrorHandler implements ExceptionFilter<Error> {

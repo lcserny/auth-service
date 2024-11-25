@@ -7,7 +7,7 @@ import { AdminUserGuard, UserGuard } from '../src/users/user.guard';
 import { CurrentConfig } from '../src/current.config';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../src/configuration';
-import { UserRegistration } from '../src/generated/model/userRegistration';
+import { UserRegistration } from '../src/generated';
 
 const MAPPED_PORT = 27017;
 const USER = 'root';
