@@ -15,11 +15,11 @@
 
 import * as runtime from '../runtime';
 import type {
-  UserResponse,
+  ApplicationErrorResponse,
 } from '../models/index';
 import {
-    UserResponseFromJSON,
-    UserResponseToJSON,
+    ApplicationErrorResponseFromJSON,
+    ApplicationErrorResponseToJSON,
 } from '../models/index';
 
 export interface RegisterRequest {
@@ -46,11 +46,11 @@ export interface CreateUserResourceApiInterface {
      * @throws {RequiredError}
      * @memberof CreateUserResourceApiInterface
      */
-    registerRaw(requestParameters: RegisterRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserResponse>>;
+    registerRaw(requestParameters: RegisterRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>>;
 
     /**
      */
-    register(requestParameters: RegisterRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserResponse>;
+    register(requestParameters: RegisterRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
 
 }
 
@@ -61,7 +61,7 @@ export class CreateUserResourceApi extends runtime.BaseAPI implements CreateUser
 
     /**
      */
-    async registerRaw(requestParameters: RegisterRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserResponse>> {
+    async registerRaw(requestParameters: RegisterRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
         if (requestParameters['username'] == null) {
             throw new runtime.RequiredError(
                 'username',
@@ -118,12 +118,16 @@ export class CreateUserResourceApi extends runtime.BaseAPI implements CreateUser
             body: formParams,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserResponseFromJSON(jsonValue));
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<string>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
     }
 
     /**
      */
-    async register(requestParameters: RegisterRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserResponse> {
+    async register(requestParameters: RegisterRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
         const response = await this.registerRaw(requestParameters, initOverrides);
         return await response.value();
     }

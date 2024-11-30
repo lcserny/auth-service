@@ -27,7 +27,7 @@ import {
     UserData,
     UserPerm,
     UserRegistration,
-    UserResponse, UserRole,
+    UserRole,
 } from '../generated';
 
 @Controller("/users")
@@ -56,22 +56,19 @@ export class UserController implements
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    async registerReal(@Body() userReg: UserRegistration): Promise<UserResponse> {
+    async registerReal(@Body() userReg: UserRegistration): Promise<string> {
         this.logger.log(`Register request received for username: ${userReg.username}`)
         const user = await this.userService.createUser(userReg);
-        return {
-            message: `User created with name: ${user.username}`,
-            statusCode: HttpStatus.CREATED,
-        };
+        return `User created with name: ${user.username}`;
     }
 
     // spec binding method
-    async register(req: RegisterRequest): Promise<UserResponse> {
+    async register(req: RegisterRequest): Promise<string> {
         return this.registerReal(req as UserRegistration);
     }
 
     // spec binding method
-    async registerRaw(req: RegisterRequest): Promise<ApiResponse<UserResponse>> {
+    async registerRaw(req: RegisterRequest): Promise<ApiResponse<string>> {
         throw new Error(`Stub method, no usage allowed ${req}`);
     }
 

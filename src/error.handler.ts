@@ -1,6 +1,8 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger } from '@nestjs/common';
 import { Response } from 'express';
-import { UserResponse } from './generated';
+import { ApplicationErrorResponse } from './generated';
+
+const DEFAULT_CODE = 'no_code';
 
 @Catch(Error)
 export class HttpErrorHandler implements ExceptionFilter<Error> {
@@ -14,15 +16,11 @@ export class HttpErrorHandler implements ExceptionFilter<Error> {
         // const request = ctx.getRequest<Request>();
         const response = ctx.getResponse<Response>();
 
-        let status = HttpStatus.INTERNAL_SERVER_ERROR;
-        if (exception instanceof HttpException) {
-            status = exception.getStatus();
-        }
-
-        response.status(status).json({
+        const error: ApplicationErrorResponse = {
             error: exception.name,
             message: exception.message,
-            statusCode: status,
-        } as UserResponse);
+            code: DEFAULT_CODE
+        };
+        response.status(HttpStatus.BAD_REQUEST).json({error});
     }
 }

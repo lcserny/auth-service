@@ -15,9 +15,12 @@
 
 import * as runtime from '../runtime';
 import type {
+  ApplicationErrorResponse,
   PaginatedUsers,
 } from '../models/index';
 import {
+    ApplicationErrorResponseFromJSON,
+    ApplicationErrorResponseToJSON,
     PaginatedUsersFromJSON,
     PaginatedUsersToJSON,
 } from '../models/index';

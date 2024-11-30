@@ -15,11 +15,11 @@
 
 import * as runtime from '../runtime';
 import type {
-  UserResponse,
+  ApplicationErrorResponse,
 } from '../models/index';
 import {
-    UserResponseFromJSON,
-    UserResponseToJSON,
+    ApplicationErrorResponseFromJSON,
+    ApplicationErrorResponseToJSON,
 } from '../models/index';
 
 /**
@@ -35,11 +35,11 @@ export interface LogoutApiInterface {
      * @throws {RequiredError}
      * @memberof LogoutApiInterface
      */
-    signOutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserResponse>>;
+    signOutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>>;
 
     /**
      */
-    signOut(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserResponse>;
+    signOut(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
 
 }
 
@@ -50,7 +50,7 @@ export class LogoutApi extends runtime.BaseAPI implements LogoutApiInterface {
 
     /**
      */
-    async signOutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserResponse>> {
+    async signOutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -62,12 +62,16 @@ export class LogoutApi extends runtime.BaseAPI implements LogoutApiInterface {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserResponseFromJSON(jsonValue));
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<string>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
     }
 
     /**
      */
-    async signOut(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserResponse> {
+    async signOut(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
         const response = await this.signOutRaw(initOverrides);
         return await response.value();
     }

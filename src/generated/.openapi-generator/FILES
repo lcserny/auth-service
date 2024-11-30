@@ -1,3 +1,4 @@
+.openapi-generator-ignore
 apis/CreateUserResourceApi.ts
 apis/GetSingleUserApi.ts
 apis/GetUsersResourceApi.ts
@@ -7,6 +8,7 @@ apis/RefreshTokenApi.ts
 apis/UpdateSingleUserDataApi.ts
 apis/index.ts
 index.ts
+models/ApplicationErrorResponse.ts
 models/NameValuePair.ts
 models/PaginatedBase.ts
 models/PaginatedUsers.ts
@@ -14,7 +16,6 @@ models/UserAccess.ts
 models/UserData.ts
 models/UserPerm.ts
 models/UserRegistration.ts
-models/UserResponse.ts
 models/UserRole.ts
 models/UserStatus.ts
 models/index.ts

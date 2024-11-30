@@ -14,7 +14,6 @@ import {
     SignInRequest,
     UserAccess,
     UserRegistration,
-    UserResponse,
 } from '../generated';
 
 @Controller('authenticate')
@@ -92,7 +91,7 @@ export class AuthController implements
 
     @Post("/logout")
     @HttpCode(HttpStatus.OK)
-    async signOutReal(@Req() request: Request, @Res() response: Response): Promise<UserResponse> {
+    async signOutReal(@Req() request: Request, @Res() response: Response): Promise<string> {
         const refreshToken = request.cookies[this.config.authentication.refreshTokenName];
         this.logger.log(`Logout request received for token: ${refreshToken}`)
 
@@ -100,19 +99,19 @@ export class AuthController implements
         response.clearCookie(this.config.authentication.refreshTokenName, { path: this.contextPath, });
 
         const statusCode = HttpStatus.OK;
-        const result = { message: `user logged out`, statusCode };
+        const result = `user logged out`;
 
         response.status(statusCode).send(result);
         return result
     }
 
     // spec binding method
-    async signOut(): Promise<UserResponse> {
+    async signOut(): Promise<string> {
         return this.signOutReal({} as Request, {} as Response);
     }
 
     // spec binding method
-    async signOutRaw(): Promise<ApiResponse<UserResponse>> {
+    async signOutRaw(): Promise<ApiResponse<string>> {
         throw new Error(`Stub method, no usage allowed`);
     }
 }

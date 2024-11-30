@@ -15,9 +15,12 @@
 
 import * as runtime from '../runtime';
 import type {
+  ApplicationErrorResponse,
   UserAccess,
 } from '../models/index';
 import {
+    ApplicationErrorResponseFromJSON,
+    ApplicationErrorResponseToJSON,
     UserAccessFromJSON,
     UserAccessToJSON,
 } from '../models/index';

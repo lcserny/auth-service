@@ -15,10 +15,13 @@
 
 import * as runtime from '../runtime';
 import type {
+  ApplicationErrorResponse,
   UserAccess,
   UserRegistration,
 } from '../models/index';
 import {
+    ApplicationErrorResponseFromJSON,
+    ApplicationErrorResponseToJSON,
     UserAccessFromJSON,
     UserAccessToJSON,
     UserRegistrationFromJSON,

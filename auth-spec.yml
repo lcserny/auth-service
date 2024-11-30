@@ -20,7 +20,15 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/UserResponse'
+                                type: string
+                                description: the result message
+                                example: user created
+                "400":
+                    description: error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApplicationErrorResponse'
         get:
             tags:
                 - Get Users Resource
@@ -65,6 +73,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/PaginatedUsers'
+                "400":
+                    description: error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApplicationErrorResponse'
     /security/users/{id}:
         get:
             tags:
@@ -84,6 +98,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/UserData'
+                "400":
+                    description: error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApplicationErrorResponse'
         put:
             tags:
                 - Update Single User Data
@@ -107,6 +127,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/UserData'
+                "400":
+                    description: error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApplicationErrorResponse'
 
     /security/authenticate:
         post:
@@ -125,6 +151,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/UserAccess'
+                "400":
+                    description: error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApplicationErrorResponse'
     /security/authenticate/logout:
         post:
             tags:
@@ -136,7 +168,15 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/UserResponse'
+                                type: string
+                                description: result message
+                                example: user logged out successfully
+                "400":
+                    description: error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApplicationErrorResponse'
     /security/authenticate/refresh:
         post:
             tags:
@@ -149,6 +189,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/UserAccess'
+                "400":
+                    description: error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApplicationErrorResponse'
 
 components:
     schemas:
@@ -189,18 +235,6 @@ components:
                 - userId
                 - roles
                 - perms
-        UserResponse:
-            type: object
-            properties:
-                message:
-                    type: string
-                error:
-                    type: string
-                statusCode:
-                    type: integer
-            required:
-                - message
-                - statusCode
         UserData:
             type: object
             properties:
@@ -274,3 +308,20 @@ components:
                 - READ
                 - WRITE
             type: string
+        ApplicationErrorResponse:
+            type: object
+            properties:
+                error:
+                    type: string
+                    description: the error type
+                message:
+                    type: string
+                    description: the error description
+                code:
+                    type: string
+                    description: the specific application error code, if available
+                    default: no_code
+            required:
+                - error
+                - message
+                - code
