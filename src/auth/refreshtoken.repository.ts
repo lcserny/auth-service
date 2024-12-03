@@ -21,7 +21,7 @@ export class RefreshTokenRepository {
 
     async revokeToken(tokenId: string): Promise<Document | UpdateResult> {
         const objId = new ObjectId(tokenId);
-        return this.repo.updateOne({
+        return this.repo.updateMany({
             _id: objId
         }, {
             $set: {

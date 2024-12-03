@@ -46,7 +46,7 @@ export class AuthService {
         this.audience = this.config.authentication.audience;
     }
 
-    async generateTokens(name: string, pass: string): Promise<Tokens> {
+    async generateTokens(name: string, pass: string, userAgent?: string): Promise<Tokens> {
         const user = await this.userRepository.findOneByUsername(name);
         if (!user || user.status === "inactive") {
             throw new NotFoundException();
@@ -58,13 +58,13 @@ export class AuthService {
         }
 
         const accessToken = await this.createAccessToken(user);
-        const refreshToken = await this.createRefreshToken(user);
+        const refreshToken = await this.createRefreshToken(user, undefined, userAgent);
 
         return { accessToken, refreshToken, userId: user.id.toString(), roles: user.roles, perms: user.permissions };
     }
 
     private async createAccessToken(user: User): Promise<string> {
-        const accessTokenPayload = {
+        return this.jwtService.signAsync({
             sub: user.id.toString(),
             exp: Math.floor(Date.now() / 1000) + (60 * this.accessExpMin),
             iat: Math.floor(Date.now() / 1000),
@@ -72,15 +72,15 @@ export class AuthService {
             aud: this.audience,
             [ROLES_KEY]: user.roles,
             [PERMS_KEY]: user.permissions,
-        };
-        return this.jwtService.signAsync(accessTokenPayload);
+        });
     }
 
-    private async createRefreshToken(user: User, exp?: Date): Promise<string> {
+    private async createRefreshToken(user: User, exp?: Date, userAgent?: string): Promise<string> {
         let refreshTokenEntity = new RefreshToken();
         refreshTokenEntity.createdTimestamp = new Date();
         refreshTokenEntity.revoked = false;
-        refreshTokenEntity.userId = new ObjectId(user.id.toString());
+        refreshTokenEntity.userId = user.id;
+        refreshTokenEntity.userAgent = userAgent || "";
 
         if (exp) {
             refreshTokenEntity.expirationTimestamp = exp;
@@ -91,16 +91,15 @@ export class AuthService {
 
         refreshTokenEntity = await this.refreshTokenRepository.save(refreshTokenEntity);
 
-        const refreshTokenPayload = {
+        return this.jwtService.signAsync({
             sub: refreshTokenEntity.userId.toString(),
             iat: Math.floor(refreshTokenEntity.createdTimestamp.getTime() / 1000),
             exp: Math.floor(refreshTokenEntity.expirationTimestamp.getTime() / 1000),
             jti: refreshTokenEntity.id.toString(),
-        };
-        return this.jwtService.signAsync(refreshTokenPayload);
+        });
     }
 
-    async validate(refreshToken?: string): Promise<Tokens> {
+    async validate(refreshToken?: string, userAgent?: string): Promise<Tokens> {
         if (!refreshToken) {
             throw new Error('No JWT token passed');
         }
@@ -128,7 +127,7 @@ export class AuthService {
         await this.refreshTokenRepository.revokeToken(tokenId);
 
         const accessToken = await this.createAccessToken(user);
-        const newRefreshToken = await this.createRefreshToken(user, foundToken.expirationTimestamp);
+        const newRefreshToken = await this.createRefreshToken(user, foundToken.expirationTimestamp, userAgent);
 
         return { accessToken, refreshToken: newRefreshToken, userId: user.id.toString(), roles: user.roles, perms: user.permissions };
     }
@@ -148,7 +147,7 @@ export class AuthService {
         await this.refreshTokenRepository.revokeToken(tokenId);
     }
 
-    public getMaxAgeSeconds() {
+    public getMaxAgeSeconds(): number {
         return this.refreshExpDays * 24 * 60 * 60;
     }
 }

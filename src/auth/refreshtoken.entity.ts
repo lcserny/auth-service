@@ -10,6 +10,9 @@ export class RefreshToken {
     userId: ObjectId;
 
     @Column()
+    userAgent: string;
+
+    @Column()
     revoked: boolean;
 
     @Column()

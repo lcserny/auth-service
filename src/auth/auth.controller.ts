@@ -33,15 +33,16 @@ export class AuthController implements
 
     @Post()
     @HttpCode(HttpStatus.OK)
-    async signInReal(@Body() credentials: UserRegistration, @Res() response: Response): Promise<UserAccess> {
-        this.logger.log(`Login request received for username: ${credentials.username}`)
-        const tokens = await this.authService.generateTokens(credentials.username, credentials.password);
+    async signInReal(@Body() credentials: UserRegistration, @Req() request: Request, @Res() response: Response): Promise<UserAccess> {
+        const userAgent = request.headers['user-agent'];
+        this.logger.log(`Login request received for username: ${credentials.username} and agent: ${userAgent}`);
+        const tokens = await this.authService.generateTokens(credentials.username, credentials.password, userAgent);
         return this.sendTokensResponse(tokens, response);
     }
 
     // spec binding method
     async signIn(req: SignInRequest): Promise<UserAccess> {
-        return this.signInReal(req.userRegistration!, {} as Response);
+        return this.signInReal(req.userRegistration!, {} as Request, {} as Response);
     }
 
     // spec binding method
@@ -52,9 +53,10 @@ export class AuthController implements
     @Post("/refresh")
     @HttpCode(HttpStatus.OK)
     async refreshReal(@Req() request: Request, @Res() response: Response): Promise<UserAccess> {
+        const userAgent = request.headers['user-agent'];
         const refreshToken = request.cookies[this.config.authentication.refreshTokenName];
-        this.logger.log(`Refresh request received for token: ${refreshToken}`)
-        const tokens = await this.authService.validate(refreshToken);
+        this.logger.log(`Refresh request received for token: ${refreshToken} and agent: ${userAgent}`);
+        const tokens = await this.authService.validate(refreshToken, userAgent);
         return this.sendTokensResponse(tokens, response);
     }
 

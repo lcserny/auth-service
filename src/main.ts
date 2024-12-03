@@ -32,7 +32,7 @@ async function bootstrap() {
 
     logger.log(`${config.application.name} starting on port: ${config.application.port}`);
 
-    await app.listen(config.application.port);
+    await app.listen(config.application.port, '0.0.0.0');
 }
 
 bootstrap();

@@ -56,4 +56,12 @@ describe('AuthService', () => {
     it('should be defined', async () => {
         expect(service).toBeDefined();
     });
+
+    it('refresh date calc', async () => {
+        const now = new Date();
+        const beforeMonth = now.getMonth();
+        now.setDate(now.getDate() + 40);
+
+        expect(now.getMonth()).not.toBe(beforeMonth);
+    });
 });
