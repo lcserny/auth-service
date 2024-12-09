@@ -146,8 +146,4 @@ export class AuthService {
         this.logger.log(`Revoking refresh token with id ${tokenId}`);
         await this.refreshTokenRepository.revokeToken(tokenId);
     }
-
-    public getMaxAgeSeconds(): number {
-        return this.refreshExpDays * 24 * 60 * 60;
-    }
 }

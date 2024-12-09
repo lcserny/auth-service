@@ -16,6 +16,8 @@ import {
     UserRegistration,
 } from '../generated';
 
+const SECONDS_IN_YEAR = 31556926;
+
 @Controller('authenticate')
 export class AuthController implements
         LoginApiInterface,
@@ -77,7 +79,7 @@ export class AuthController implements
             path: this.contextPath,
             // I don't have a valid HTTPS certificate
             // secure: true,
-            maxAge: this.authService.getMaxAgeSeconds() * 1000
+            maxAge: SECONDS_IN_YEAR
         });
 
         const result = {
