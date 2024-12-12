@@ -75,11 +75,9 @@ export class AuthController implements
     private sendTokensResponse(tokens: Tokens, response: Response) {
         response.cookie(this.config.authentication.refreshTokenName, tokens.refreshToken, {
             httpOnly: true,
-            sameSite: "strict",
-            path: this.contextPath,
-            // I don't have a valid HTTPS certificate
-            // secure: true,
-            maxAge: SECONDS_IN_YEAR
+            sameSite: "strict", // needs ajustment if auth-serv and front are in different domains
+            // secure: true, // I don't have a valid HTTPS certificate
+            maxAge: SECONDS_IN_YEAR * 1000 // browser maxAge is in seconds BUT nestJS maxAge is in millis
         });
 
         const result = {
