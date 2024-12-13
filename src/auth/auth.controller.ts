@@ -98,7 +98,7 @@ export class AuthController implements
         this.logger.log(`Logout request received for token: ${refreshToken}`)
 
         await this.authService.logout(refreshToken);
-        response.clearCookie(this.config.authentication.refreshTokenName, { path: this.contextPath, });
+        response.clearCookie(this.config.authentication.refreshTokenName);
 
         const statusCode = HttpStatus.OK;
         const result = `user logged out`;
