@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb';
 import * as yaml from 'js-yaml';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { UserPerm, UserRole, UserStatus } from './src/users/user.entity';
+import { UserPerm, UserRole, UserStatus } from './src/generated';
 
 async function run() {
     const config = yaml.load(readFileSync(join(__dirname, "src/config/config.yaml"), 'utf8')) as Record<string, any>;
