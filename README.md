@@ -28,6 +28,8 @@
 
 ## Project setup
 
+### Note: `you will need to add a user manually in PROD DB`
+
 ```bash
 $ npm install
 ```
