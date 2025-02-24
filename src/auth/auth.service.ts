@@ -14,6 +14,7 @@ import { User } from '../users/user.entity';
 import { ObjectId } from 'mongodb';
 import { CurrentConfig } from '../current.config';
 import { UserPerm, UserRole } from '../generated';
+import { addDays } from 'date-fns';
 
 export interface Tokens {
     accessToken: string,
@@ -85,8 +86,9 @@ export class AuthService {
         if (exp) {
             refreshTokenEntity.expirationTimestamp = exp;
         } else {
-            refreshTokenEntity.expirationTimestamp = new Date();
-            refreshTokenEntity.expirationTimestamp.setDate(refreshTokenEntity.expirationTimestamp.getDate() + this.refreshExpDays);
+            let expTime = new Date();
+            expTime = addDays(expTime, this.refreshExpDays);
+            refreshTokenEntity.expirationTimestamp = expTime;
         }
 
         refreshTokenEntity = await this.refreshTokenRepository.save(refreshTokenEntity);

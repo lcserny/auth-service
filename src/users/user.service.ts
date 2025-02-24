@@ -3,7 +3,6 @@ import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
 import { CurrentConfig } from '../current.config';
-import * as moment from 'moment';
 import {
     NameValuePair,
     PaginatedUsers,
@@ -85,7 +84,7 @@ export class UserService {
         }
 
         if (data.created) {
-            user.createdTimestamp = moment(data.created).toDate();
+            user.createdTimestamp = data.created;
         }
 
         return user;
