@@ -16,10 +16,13 @@
 import * as runtime from '../runtime';
 import type {
   ApplicationErrorResponse,
+  ResponseMessage,
 } from '../models/index';
 import {
     ApplicationErrorResponseFromJSON,
     ApplicationErrorResponseToJSON,
+    ResponseMessageFromJSON,
+    ResponseMessageToJSON,
 } from '../models/index';
 
 /**
@@ -35,11 +38,11 @@ export interface LogoutApiInterface {
      * @throws {RequiredError}
      * @memberof LogoutApiInterface
      */
-    signOutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>>;
+    signOutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseMessage>>;
 
     /**
      */
-    signOut(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string>;
+    signOut(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseMessage>;
 
 }
 
@@ -50,7 +53,7 @@ export class LogoutApi extends runtime.BaseAPI implements LogoutApiInterface {
 
     /**
      */
-    async signOutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+    async signOutRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponseMessage>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -62,16 +65,12 @@ export class LogoutApi extends runtime.BaseAPI implements LogoutApiInterface {
             query: queryParameters,
         }, initOverrides);
 
-        if (this.isJsonMime(response.headers.get('content-type'))) {
-            return new runtime.JSONApiResponse<string>(response);
-        } else {
-            return new runtime.TextApiResponse(response) as any;
-        }
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponseMessageFromJSON(jsonValue));
     }
 
     /**
      */
-    async signOut(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
+    async signOut(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponseMessage> {
         const response = await this.signOutRaw(initOverrides);
         return await response.value();
     }

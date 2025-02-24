@@ -168,9 +168,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                type: string
-                                description: result message
-                                example: user logged out successfully
+                                $ref: '#/components/schemas/ResponseMessage'
                 "400":
                     description: error
                     content:
@@ -308,6 +306,12 @@ components:
                 - READ
                 - WRITE
             type: string
+        ResponseMessage:
+            type: object
+            properties:
+                message:
+                    type: string
+                    description: the message
         ApplicationErrorResponse:
             type: object
             properties:

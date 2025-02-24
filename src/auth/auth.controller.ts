@@ -10,7 +10,7 @@ import { Request, Response } from 'express';
 import { CurrentConfig } from '../current.config';
 import {
     ApiResponse,
-    LoginApiInterface, LogoutApiInterface, RefreshTokenApiInterface,
+    LoginApiInterface, LogoutApiInterface, RefreshTokenApiInterface, ResponseMessage,
     SignInRequest,
     UserAccess,
     UserRegistration,
@@ -93,7 +93,7 @@ export class AuthController implements
 
     @Post("/logout")
     @HttpCode(HttpStatus.OK)
-    async signOutReal(@Req() request: Request, @Res() response: Response): Promise<string> {
+    async signOutReal(@Req() request: Request, @Res() response: Response): Promise<ResponseMessage> {
         const refreshToken = request.cookies[this.config.authentication.refreshTokenName];
         this.logger.log(`Logout request received for token: ${refreshToken}`)
 
@@ -101,19 +101,19 @@ export class AuthController implements
         response.clearCookie(this.config.authentication.refreshTokenName);
 
         const statusCode = HttpStatus.OK;
-        const result = `user logged out`;
+        const result = { message: "user logged out" };
 
         response.status(statusCode).send(result);
         return result
     }
 
     // spec binding method
-    async signOut(): Promise<string> {
+    async signOut(): Promise<ResponseMessage> {
         return this.signOutReal({} as Request, {} as Response);
     }
 
     // spec binding method
-    async signOutRaw(): Promise<ApiResponse<string>> {
+    async signOutRaw(): Promise<ApiResponse<ResponseMessage>> {
         throw new Error(`Stub method, no usage allowed`);
     }
 }
