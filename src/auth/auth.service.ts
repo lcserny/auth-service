@@ -11,10 +11,9 @@ import { JwtService } from '@nestjs/jwt';
 import { RefreshToken } from './refreshtoken.entity';
 import { RefreshTokenRepository } from './refreshtoken.repository';
 import { User } from '../users/user.entity';
-import { ObjectId } from 'mongodb';
 import { CurrentConfig } from '../current.config';
 import { UserPerm, UserRole } from '../generated';
-import { addDays } from 'date-fns';
+import { addDays, addMinutes, getTime } from 'date-fns';
 
 export interface Tokens {
     accessToken: string,
@@ -65,10 +64,15 @@ export class AuthService {
     }
 
     private async createAccessToken(user: User): Promise<string> {
+        const iat = new Date();
+        const iatSeconds = Math.floor(getTime(iat) / 1000);
+        const exp = addMinutes(iat, this.accessExpMin);
+        const expSeconds = Math.floor(getTime(exp) / 1000);
+
         return this.jwtService.signAsync({
             sub: user.id.toString(),
-            exp: Math.floor(Date.now() / 1000) + (60 * this.accessExpMin),
-            iat: Math.floor(Date.now() / 1000),
+            exp: expSeconds,
+            iat: iatSeconds,
             iss: this.issuer,
             aud: this.audience,
             [ROLES_KEY]: user.roles,
