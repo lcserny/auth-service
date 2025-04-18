@@ -39,6 +39,14 @@ export class AuthController implements
         const userAgent = request.headers['user-agent'];
         this.logger.log(`Login request received for username: ${credentials.username} and agent: ${userAgent}`);
         const tokens = await this.authService.generateTokens(credentials.username, credentials.password, userAgent);
+
+        response.cookie(this.config.authentication.refreshTokenName, tokens.refreshToken, {
+            httpOnly: true,
+            sameSite: "strict", // needs ajustment if auth-serv and front are in different domains
+            // secure: true, // I don't have a valid HTTPS certificate
+            maxAge: SECONDS_IN_YEAR * 1000 // browser maxAge is in seconds BUT nestJS maxAge is in millis
+        });
+
         return this.sendTokensResponse(tokens, response);
     }
 
@@ -58,7 +66,7 @@ export class AuthController implements
         const userAgent = request.headers['user-agent'];
         const refreshToken = request.cookies[this.config.authentication.refreshTokenName];
         this.logger.log(`Refresh request received for token: ${refreshToken} and agent: ${userAgent}`);
-        const tokens = await this.authService.validate(refreshToken, userAgent);
+        const tokens = await this.authService.validate(refreshToken);
         return this.sendTokensResponse(tokens, response);
     }
 
@@ -72,14 +80,7 @@ export class AuthController implements
         throw new Error(`Stub method, no usage allowed`);
     }
 
-    private sendTokensResponse(tokens: Tokens, response: Response) {
-        response.cookie(this.config.authentication.refreshTokenName, tokens.refreshToken, {
-            httpOnly: true,
-            sameSite: "strict", // needs ajustment if auth-serv and front are in different domains
-            // secure: true, // I don't have a valid HTTPS certificate
-            maxAge: SECONDS_IN_YEAR * 1000 // browser maxAge is in seconds BUT nestJS maxAge is in millis
-        });
-
+    private sendTokensResponse(tokens: Tokens, response: Response): UserAccess {
         const result = {
             accessToken: tokens.accessToken,
             userId: tokens.userId,

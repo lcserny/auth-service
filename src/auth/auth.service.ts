@@ -58,7 +58,7 @@ export class AuthService {
         }
 
         const accessToken = await this.createAccessToken(user);
-        const refreshToken = await this.createRefreshToken(user, undefined, userAgent);
+        const refreshToken = await this.createRefreshToken(user, userAgent);
 
         return { accessToken, refreshToken, userId: user.id.toString(), roles: user.roles, perms: user.permissions };
     }
@@ -80,20 +80,16 @@ export class AuthService {
         });
     }
 
-    private async createRefreshToken(user: User, exp?: Date, userAgent?: string): Promise<string> {
+    private async createRefreshToken(user: User, userAgent?: string): Promise<string> {
         let refreshTokenEntity = new RefreshToken();
         refreshTokenEntity.createdTimestamp = new Date();
         refreshTokenEntity.revoked = false;
         refreshTokenEntity.userId = user.id;
         refreshTokenEntity.userAgent = userAgent || "";
 
-        if (exp) {
-            refreshTokenEntity.expirationTimestamp = exp;
-        } else {
-            let expTime = new Date();
-            expTime = addDays(expTime, this.refreshExpDays);
-            refreshTokenEntity.expirationTimestamp = expTime;
-        }
+        let expTime = new Date();
+        expTime = addDays(expTime, this.refreshExpDays);
+        refreshTokenEntity.expirationTimestamp = expTime;
 
         refreshTokenEntity = await this.refreshTokenRepository.save(refreshTokenEntity);
 
@@ -105,7 +101,7 @@ export class AuthService {
         });
     }
 
-    async validate(refreshToken?: string, userAgent?: string): Promise<Tokens> {
+    async validate(refreshToken?: string): Promise<Tokens> {
         if (!refreshToken) {
             throw new Error('No JWT token passed');
         }
@@ -130,12 +126,9 @@ export class AuthService {
             throw new NotFoundException(`userId from token with id ${tokenId} is invalid`);
         }
 
-        await this.refreshTokenRepository.revokeToken(tokenId);
-
         const accessToken = await this.createAccessToken(user);
-        const newRefreshToken = await this.createRefreshToken(user, foundToken.expirationTimestamp, userAgent);
 
-        return { accessToken, refreshToken: newRefreshToken, userId: user.id.toString(), roles: user.roles, perms: user.permissions };
+        return { accessToken, refreshToken, userId: user.id.toString(), roles: user.roles, perms: user.permissions };
     }
 
     async logout(refreshToken?: string) {
