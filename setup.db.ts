@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { UserPerm, UserRole, UserStatus } from './src/generated';
 
+// TODO improve this
 async function run() {
     const config = yaml.load(readFileSync(join(__dirname, "src/config/config.yaml"), 'utf8')) as Record<string, any>;
     const client = new MongoClient(config.database.url, { authSource: "admin" });
