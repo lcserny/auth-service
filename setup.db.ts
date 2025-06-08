@@ -1,13 +1,13 @@
 import { MongoClient } from 'mongodb';
-import * as yaml from 'js-yaml';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { UserPerm, UserRole, UserStatus } from './src/generated';
+import * as readline from 'node:readline/promises';
+import { stdin as input, stdout as output } from 'node:process';
 
-// TODO improve this
 async function run() {
-    const config = yaml.load(readFileSync(join(__dirname, "src/config/config.yaml"), 'utf8')) as Record<string, any>;
-    const client = new MongoClient(config.database.url, { authSource: "admin" });
+    const mongoUrl = await produceMongoUrl();
+    console.log(`\nMongoDB connection: ${mongoUrl}\n`);
+
+    const client = new MongoClient(mongoUrl, { authSource: "admin" });
     await client.connect();
 
     try {
@@ -31,6 +31,23 @@ async function run() {
     } finally {
         await client.close();
     }
+}
+
+async function produceMongoUrl(): Promise<string> {
+    const rl = readline.createInterface({ input, output });
+    let dbHostPort = await rl.question('Enter database host with port (default: "localhost:27019"): ');
+    if (!dbHostPort) {
+        dbHostPort = 'localhost:27019';
+    }
+    const dbUsername = await rl.question('Enter database username: ');
+    const dbPassword = await rl.question('Enter database password: ');
+    let dbName = await rl.question('Enter database name (default: "videosmover"): ');
+    if (!dbName) {
+        dbName = 'videosmover';
+    }
+    rl.close();
+
+    return `mongodb://${dbUsername}:${dbPassword}@${dbHostPort}/${dbName}?retryWrites=true&w=majority`;
 }
 
 run();
