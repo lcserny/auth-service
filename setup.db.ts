@@ -14,20 +14,22 @@ async function run() {
         const db = client.db();
         const userCollection = db.collection("user");
 
-        const found = await userCollection.findOne({ username: "leonardo" });
-        if (!found) {
-            await userCollection.insertOne({
-                username: "leonardo",
-                password: "$2b$10$Sv5yD1XJSOxkFJTUktpfcegRvr12sI9cIFaaZomMCWoP3mPYecgdm",
-                firstName: "Leonardo",
-                lastName: "Cserny",
-                roles: ["STANDARD", "ADMIN"] as UserRole[],
-                permissions: ["READ", "WRITE"] as UserPerm[],
-                status: "active" as UserStatus,
-                createdTimestamp: new Date(),
-            });
-            console.log('Inserted default admin user.');
-        }
+        const filter = { username: "leonardo" };
+        const update = {
+            username: "leonardo",
+            password: "$2b$10$Sv5yD1XJSOxkFJTUktpfcegRvr12sI9cIFaaZomMCWoP3mPYecgdm",
+            firstName: "Leonardo",
+            lastName: "Cserny",
+            roles: ["STANDARD", "ADMIN"] as UserRole[],
+            permissions: ["READ", "WRITE"] as UserPerm[],
+            status: "active" as UserStatus,
+            createdTimestamp: new Date(),
+        };
+        const options = { upsert: true };
+
+        await userCollection.updateOne(filter, update, options);
+
+        console.log('Upserted default admin user.');
     } finally {
         await client.close();
     }
