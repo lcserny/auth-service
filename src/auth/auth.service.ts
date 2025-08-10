@@ -18,6 +18,7 @@ import { addDays, addMinutes, getTime } from 'date-fns';
 export interface Tokens {
     accessToken: string,
     refreshToken: string,
+    accessExpires: Date,
     userId: string,
     roles: UserRole[],
     perms: UserPerm[],
@@ -57,19 +58,19 @@ export class AuthService {
             throw new UnauthorizedException();
         }
 
-        const accessToken = await this.createAccessToken(user);
+        const {token, expires} = await this.createAccessToken(user);
         const refreshToken = await this.createRefreshToken(user, userAgent);
 
-        return { accessToken, refreshToken, userId: user.id.toString(), roles: user.roles, perms: user.permissions };
+        return { accessToken: token, accessExpires: expires, refreshToken, userId: user.id.toString(), roles: user.roles, perms: user.permissions };
     }
 
-    private async createAccessToken(user: User): Promise<string> {
+    private async createAccessToken(user: User): Promise<{token: string, expires: Date}> {
         const iat = new Date();
         const iatSeconds = Math.floor(getTime(iat) / 1000);
         const exp = addMinutes(iat, this.accessExpMin);
         const expSeconds = Math.floor(getTime(exp) / 1000);
 
-        return this.jwtService.signAsync({
+        const token = await this.jwtService.signAsync({
             sub: user.id.toString(),
             exp: expSeconds,
             iat: iatSeconds,
@@ -78,6 +79,8 @@ export class AuthService {
             [ROLES_KEY]: user.roles,
             [PERMS_KEY]: user.permissions,
         });
+
+        return { token, expires: exp };
     }
 
     private async createRefreshToken(user: User, userAgent?: string): Promise<string> {
@@ -126,9 +129,9 @@ export class AuthService {
             throw new NotFoundException(`userId from token with id ${tokenId} is invalid`);
         }
 
-        const accessToken = await this.createAccessToken(user);
+        const {token, expires} = await this.createAccessToken(user);
 
-        return { accessToken, refreshToken, userId: user.id.toString(), roles: user.roles, perms: user.permissions };
+        return { accessToken: token, accessExpires: expires, refreshToken, userId: user.id.toString(), roles: user.roles, perms: user.permissions };
     }
 
     async logout(refreshToken?: string) {

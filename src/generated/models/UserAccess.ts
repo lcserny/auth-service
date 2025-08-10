@@ -39,6 +39,12 @@ export interface UserAccess {
      */
     accessToken: string;
     /**
+     * RFC 3339 timestamp in UTC for when the access token expires
+     * @type {Date}
+     * @memberof UserAccess
+     */
+    expires?: Date;
+    /**
      * 
      * @type {string}
      * @memberof UserAccess
@@ -80,6 +86,7 @@ export function UserAccessFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     return {
         
         'accessToken': json['accessToken'],
+        'expires': json['expires'] == null ? undefined : (new Date(json['expires'])),
         'userId': json['userId'],
         'roles': ((json['roles'] as Array<any>).map(UserRoleFromJSON)),
         'perms': ((json['perms'] as Array<any>).map(UserPermFromJSON)),
@@ -93,6 +100,7 @@ export function UserAccessToJSON(value?: UserAccess | null): any {
     return {
         
         'accessToken': value['accessToken'],
+        'expires': value['expires'] == null ? undefined : ((value['expires']).toISOString()),
         'userId': value['userId'],
         'roles': ((value['roles'] as Array<any>).map(UserRoleToJSON)),
         'perms': ((value['perms'] as Array<any>).map(UserPermToJSON)),

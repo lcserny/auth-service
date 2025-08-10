@@ -42,7 +42,7 @@ export class AuthController implements
 
         response.cookie(this.config.authentication.refreshTokenName, tokens.refreshToken, {
             httpOnly: true,
-            sameSite: "strict", // needs ajustment if auth-serv and front are in different domains
+            sameSite: "lax",
             // secure: true, // I don't have a valid HTTPS certificate
             maxAge: SECONDS_IN_YEAR * 1000 // browser maxAge is in seconds BUT nestJS maxAge is in millis
         });
@@ -81,8 +81,9 @@ export class AuthController implements
     }
 
     private sendTokensResponse(tokens: Tokens, response: Response): UserAccess {
-        const result = {
+        const result: UserAccess = {
             accessToken: tokens.accessToken,
+            expires: tokens.accessExpires,
             userId: tokens.userId,
             roles: tokens.roles,
             perms: tokens.perms

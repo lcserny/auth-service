@@ -15,11 +15,11 @@ database:
 authentication:
     algorithm: "HS256"
     secret: "67uzoULtouBbSpwjVvzVQ5D1APKTc3i9"
-    accessExpirationMinutes: 15
-    refreshExpirationDays: 7
+    accessExpirationMinutes: 3
+    refreshExpirationDays: 1
     refreshTokenName: refreshTokenDev
     issuer: auth-service-dev
     audience:
-        - commander
+        - commander-dev
         - auth-service-dev
     salt: 10
