@@ -16,14 +16,16 @@ async function run() {
 
         const filter = { username: "leonardo" };
         const update = {
-            username: "leonardo",
-            password: "$2b$10$Sv5yD1XJSOxkFJTUktpfcegRvr12sI9cIFaaZomMCWoP3mPYecgdm",
-            firstName: "Leonardo",
-            lastName: "Cserny",
-            roles: ["STANDARD", "ADMIN"] as UserRole[],
-            permissions: ["READ", "WRITE"] as UserPerm[],
-            status: "active" as UserStatus,
-            createdTimestamp: new Date(),
+            $set: {
+                username: "leonardo",
+                password: "$2b$10$Sv5yD1XJSOxkFJTUktpfcegRvr12sI9cIFaaZomMCWoP3mPYecgdm",
+                firstName: "Leonardo",
+                lastName: "Cserny",
+                roles: ["STANDARD", "ADMIN"] as UserRole[],
+                permissions: ["READ", "WRITE"] as UserPerm[],
+                status: "active" as UserStatus,
+                createdTimestamp: new Date(),
+            }
         };
         const options = { upsert: true };
 
