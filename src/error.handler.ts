@@ -22,7 +22,7 @@ export class HttpErrorHandler implements ExceptionFilter<Error> {
         }
 
         const error: ApplicationErrorResponse = {
-            error: exception.name,
+            type: exception.name,
             message: exception.message,
             code: DEFAULT_CODE
         };

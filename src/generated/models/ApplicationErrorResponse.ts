@@ -24,7 +24,7 @@ export interface ApplicationErrorResponse {
      * @type {string}
      * @memberof ApplicationErrorResponse
      */
-    error: string;
+    type?: string;
     /**
      * the error description
      * @type {string}
@@ -43,7 +43,6 @@ export interface ApplicationErrorResponse {
  * Check if a given object implements the ApplicationErrorResponse interface.
  */
 export function instanceOfApplicationErrorResponse(value: object): value is ApplicationErrorResponse {
-    if (!('error' in value) || value['error'] === undefined) return false;
     if (!('message' in value) || value['message'] === undefined) return false;
     if (!('code' in value) || value['code'] === undefined) return false;
     return true;
@@ -59,7 +58,7 @@ export function ApplicationErrorResponseFromJSONTyped(json: any, ignoreDiscrimin
     }
     return {
         
-        'error': json['error'],
+        'type': json['type'] == null ? undefined : json['type'],
         'message': json['message'],
         'code': json['code'],
     };
@@ -71,7 +70,7 @@ export function ApplicationErrorResponseToJSON(value?: ApplicationErrorResponse 
     }
     return {
         
-        'error': value['error'],
+        'type': value['type'],
         'message': value['message'],
         'code': value['code'],
     };
