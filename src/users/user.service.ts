@@ -84,7 +84,7 @@ export class UserService {
         }
 
         if (data.created) {
-            user.createdTimestamp = data.created;
+            user.createdTimestamp = new Date(data.created);
         }
 
         return user;
